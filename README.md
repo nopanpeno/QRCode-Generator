@@ -1,0 +1,1 @@
+# QR Studio`n`nA private, browser-based QR code generator and reader. `n
