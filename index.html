@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f7f7f2" />
+    <meta name="description" content="Buat QR code tautan, teks, dan Wi-Fi secara privat langsung di browser." />
+    <title>QR Studio — QR code yang simpel dan privat</title>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="QR Studio, beranda">
+          <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <span>qr<span class="brand-light">studio</span></span>
+        </a>
+        <span class="local-badge"><span></span> Privat secara default</span>
+      </header>
+
+      <main>
+        <section class="intro" aria-labelledby="page-title">
+          <p class="eyebrow">QR CODE GENERATOR</p>
+          <h1 id="page-title">Bagikan dengan<br /><span>sekali pindai.</span></h1>
+          <p class="intro-copy">Buat QR code untuk tautan, teks, atau Wi-Fi. Gratis, cepat, dan semua proses tetap di perangkatmu.</p>
+        </section>
+
+        <section class="workspace" aria-label="Pembuat QR code">
+          <div class="editor card">
+            <div class="section-heading"><div><span class="step-label">LANGKAH 1</span><h2>Pilih konten</h2></div></div>
+
+            <div class="tabs" role="tablist" aria-label="Jenis konten QR">
+              <button class="tab active" id="tab-link" type="button" role="tab" aria-selected="true" aria-controls="content-panel" data-type="link"><span aria-hidden="true">↗</span> Tautan</button>
+              <button class="tab" id="tab-text" type="button" role="tab" aria-selected="false" aria-controls="content-panel" data-type="text"><span aria-hidden="true">T</span> Teks</button>
+              <button class="tab" id="tab-wifi" type="button" role="tab" aria-selected="false" aria-controls="content-panel" data-type="wifi"><span aria-hidden="true">⌁</span> Wi-Fi</button>
+            </div>
+
+            <div id="content-panel" role="tabpanel" aria-labelledby="tab-link">
+              <div class="form-panel active" data-panel="link">
+                <label for="link-input">URL tujuan</label>
+                <div class="input-wrap"><span aria-hidden="true">https://</span><input id="link-input" type="url" inputmode="url" placeholder="contoh.com/halaman" autocomplete="url" /></div>
+                <p class="field-hint">Masukkan alamat yang diawali http:// atau https://</p>
+              </div>
+              <div class="form-panel" data-panel="text" hidden>
+                <label for="text-input">Teks yang ingin dibagikan</label>
+                <textarea id="text-input" rows="4" maxlength="1200" placeholder="Tulis pesanmu di sini..."></textarea>
+                <div class="field-meta"><span class="field-hint">Maksimal 1.200 karakter</span><span id="char-count">0 / 1.200</span></div>
+              </div>
+              <div class="form-panel" data-panel="wifi" hidden>
+                <label for="ssid-input">Nama jaringan (SSID)</label>
+                <input id="ssid-input" type="text" autocomplete="off" placeholder="Nama Wi-Fi" />
+                <div class="wifi-row">
+                  <div><label for="security-input">Keamanan</label><select id="security-input"><option value="WPA">WPA / WPA2 / WPA3</option><option value="WEP">WEP</option><option value="nopass">Terbuka (tanpa sandi)</option></select></div>
+                  <div id="password-field"><label for="password-input">Kata sandi</label><input id="password-input" type="password" autocomplete="new-password" placeholder="Kata sandi Wi-Fi" /></div>
+                </div>
+                <label class="check-row"><input id="hidden-input" type="checkbox" /><span>Jaringan tersembunyi</span></label>
+                <p class="wifi-note"><span aria-hidden="true">ⓘ</span> QR Wi-Fi menyertakan kata sandi. Bagikan hanya kepada orang yang kamu percaya.</p>
+              </div>
+              <p class="status" id="status" role="status" aria-live="polite">Isi data untuk melihat QR code.</p>
+            </div>
+
+            <div class="divider"></div>
+            <div class="section-heading"><div><span class="step-label">LANGKAH 2</span><h2>Atur tampilan</h2></div></div>
+            <div class="style-controls">
+              <div class="color-control"><label for="foreground-input">Warna QR</label><div class="color-input"><input id="foreground-input" type="color" value="#17231d" /><span id="foreground-value">#17231D</span></div></div>
+              <div class="color-control"><label for="background-input">Warna latar</label><div class="color-input"><input id="background-input" type="color" value="#ffffff" /><span id="background-value">#FFFFFF</span></div></div>
+            </div>
+            <label class="size-label" for="size-input">Ukuran unduhan</label>
+            <div class="size-options" role="group" aria-label="Ukuran unduhan">
+              <button type="button" class="size-option" data-size="256" aria-pressed="false">256 <span>px</span></button>
+              <button type="button" class="size-option selected" data-size="512" aria-pressed="true">512 <span>px</span></button>
+              <button type="button" class="size-option" data-size="1024" aria-pressed="false">1024 <span>px</span></button>
+            </div>
+          </div>
+
+          <aside class="preview card" aria-label="Pratinjau dan unduhan QR">
+            <div class="preview-top"><div><span class="step-label">LANGKAH 3</span><h2>Pratinjau</h2></div><span class="live-label"><span></span> LANGSUNG</span></div>
+            <div class="qr-frame" id="qr-frame"><div class="qr-placeholder" id="qr-placeholder"><span class="placeholder-icon" aria-hidden="true"><i></i><i></i><i></i><i></i></span><p>QR code-mu akan<br />muncul di sini</p></div><canvas id="qr-canvas" width="280" height="280" aria-label="Pratinjau QR code" hidden></canvas></div>
+            <div class="download-area"><p class="download-label">UNDUH QR CODE</p><div class="download-buttons"><button id="download-png" class="download-button primary" type="button" disabled><span aria-hidden="true">↓</span> PNG</button><button id="download-svg" class="download-button secondary" type="button" disabled><span aria-hidden="true">↓</span> SVG</button></div><p class="download-hint">PNG untuk dibagikan · SVG untuk dicetak</p></div>
+          </aside>
+        </section>
+
+        <section class="privacy-strip"><span class="privacy-icon" aria-hidden="true">◈</span><p><strong>Datamu tetap milikmu.</strong> QR dibuat langsung di browser ini. Tidak ada data yang dikirim atau disimpan.</p><span class="lock-icon" aria-hidden="true">⌑</span></section>
+      </main>
+      <footer><span>© 2026 QR Studio</span><span>Dibuat dengan <span class="heart">♥</span> untuk berbagi.</span></footer>
+    </div>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
