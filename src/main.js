@@ -25,8 +25,8 @@ function getPayload() {
     }
   }
   if (contentType === 'text') {
-    const value = $('#text-input').value.trim();
-    if (!value) return { error: 'Tulis teks untuk membuat QR code.' };
+    const value = $('#text-input').value;
+    if (!value.trim()) return { error: 'Tulis teks untuk membuat QR code.' };
     if (value.length > 1200) return { error: 'Teks terlalu panjang. Batasi hingga 1.200 karakter.' };
     return { value };
   }
@@ -62,9 +62,9 @@ async function refresh() {
   }
   try {
     await QRCode.toCanvas(canvas, result.value, {
-      width: 280,
-      margin: 2,
-      errorCorrectionLevel: 'M',
+      width: 360,
+      margin: 4,
+      errorCorrectionLevel: 'L',
       color: { dark: $('#foreground-input').value, light: $('#background-input').value }
     });
     if (thisRender !== renderId) return;
@@ -130,8 +130,8 @@ $('#download-png').addEventListener('click', async () => {
   if (!currentPayload) return;
   const data = await QRCode.toDataURL(currentPayload, {
     width: exportSize,
-    margin: 2,
-    errorCorrectionLevel: 'M',
+    margin: 4,
+    errorCorrectionLevel: 'L',
     color: { dark: $('#foreground-input').value, light: $('#background-input').value }
   });
   download(data, 'qr-studio.png');
@@ -142,8 +142,8 @@ $('#download-svg').addEventListener('click', async () => {
   const svg = await QRCode.toString(currentPayload, {
     type: 'svg',
     width: exportSize,
-    margin: 2,
-    errorCorrectionLevel: 'M',
+    margin: 4,
+    errorCorrectionLevel: 'L',
     color: { dark: $('#foreground-input').value, light: $('#background-input').value }
   });
   download(`data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`, 'qr-studio.svg');

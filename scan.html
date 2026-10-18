@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f7f7f2" />
+    <meta name="description" content="Pindai QR code dan baca isinya dengan aman di browser." />
+    <title>Pindai QR — QR Studio</title>
+  </head>
+  <body>
+    <div class="app-shell scan-shell">
+      <header class="topbar">
+        <a class="brand" href="./index.html" aria-label="QR Studio, kembali ke beranda">
+          <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <span>qr<span class="brand-light">studio</span></span>
+        </a>
+        <a class="scan-link" href="./index.html">Buat QR <span aria-hidden="true">↗</span></a>
+      </header>
+
+      <main class="scan-main">
+        <section class="intro" aria-labelledby="page-title">
+          <p class="eyebrow">QR CODE READER</p>
+          <h1 id="page-title">Baca isi<br /><span>QR code.</span></h1>
+          <p class="intro-copy">Pindai dengan kamera atau pilih gambar QR. Teks hasil pindai tampil di sini dan tetap di perangkatmu.</p>
+        </section>
+
+        <section class="scanner-card card" aria-label="Pemindai QR code">
+          <div class="scanner-tabs" role="tablist" aria-label="Pilih cara memindai">
+            <button class="scanner-tab active" id="camera-tab" role="tab" aria-selected="true" aria-controls="camera-panel" type="button">Kamera</button>
+            <button class="scanner-tab" id="image-tab" role="tab" aria-selected="false" aria-controls="image-panel" type="button">Pilih gambar</button>
+          </div>
+
+          <div id="camera-panel" class="scanner-panel" role="tabpanel" aria-labelledby="camera-tab">
+            <div class="camera-box" id="camera-box">
+              <video id="camera-video" playsinline muted hidden></video>
+              <div class="camera-placeholder" id="camera-placeholder"><span class="camera-icon" aria-hidden="true">▣</span><p>Kamera akan aktif setelah kamu menekan tombol mulai.</p></div>
+              <div class="scan-guide" aria-hidden="true"><span></span></div>
+            </div>
+            <button class="download-button primary scanner-action" id="camera-button" type="button">Mulai pindai</button>
+          </div>
+
+          <div id="image-panel" class="scanner-panel" role="tabpanel" aria-labelledby="image-tab" hidden>
+            <label class="upload-box" for="image-input"><span class="upload-icon" aria-hidden="true">↑</span><strong>Pilih gambar QR</strong><span>PNG, JPG, atau tangkapan layar</span><input id="image-input" type="file" accept="image/*" /></label>
+          </div>
+
+          <p id="scan-status" class="status scan-status" role="status" aria-live="polite">Arahkan kamera ke QR code yang ingin dibaca.</p>
+
+          <section id="result-panel" class="result-panel" aria-labelledby="result-title" hidden>
+            <div class="result-heading"><h2 id="result-title">Isi QR code</h2><button id="copy-button" class="copy-button" type="button">Salin teks</button></div>
+            <pre id="result-text" class="result-text"></pre>
+            <a id="open-link" class="open-link" href="#" target="_blank" rel="noopener noreferrer" hidden>Buka tautan <span aria-hidden="true">↗</span></a>
+          </section>
+        </section>
+
+        <p class="scanner-privacy"><span aria-hidden="true">◈</span> Kamera hanya dipakai saat memindai. Gambar dan hasil pindai tidak diunggah atau disimpan.</p>
+      </main>
+      <footer><span>© 2026 QR Studio</span><a href="./index.html">Kembali ke pembuat QR</a></footer>
+    </div>
+    <script type="module" src="./src/scanner.js"></script>
+  </body>
+</html>
