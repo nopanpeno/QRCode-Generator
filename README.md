@@ -28,7 +28,7 @@ npm run preview
 
 ## Pemindaian dan dukungan browser
 
-Pemindaian memakai API browser `BarcodeDetector`, yang belum tersedia di semua browser. Jika tidak tersedia, gunakan browser berbasis Chromium yang mendukung API tersebut. Situs harus dibuka melalui HTTPS (GitHub Pages sudah menggunakan HTTPS) agar akses kamera diizinkan. Pemindaian gambar juga memerlukan dukungan `BarcodeDetector`.
+Pemindaian menggunakan `BarcodeDetector` bila tersedia dan otomatis memakai pustaka `jsQR` sebagai fallback di browser lain. Kamera memerlukan HTTPS (GitHub Pages sudah menggunakan HTTPS) dan izin dari pengguna.
 
 ## Privasi
 

@@ -1,7 +1,10 @@
+import jsQR from 'jsqr';
 import './style.css';
 
 const $ = (selector) => document.querySelector(selector);
 const video = $('#camera-video');
+const decodeCanvas = document.createElement('canvas');
+const decodeContext = decodeCanvas.getContext('2d', { willReadFrequently: true });
 let stream;
 let scanFrame;
 let detector;
@@ -43,6 +46,33 @@ function stopCamera() {
   $('#camera-box').classList.remove('camera-active');
 }
 
+async function createDetector() {
+  if (!('BarcodeDetector' in globalThis)) return undefined;
+  try {
+    const formats = await BarcodeDetector.getSupportedFormats();
+    return formats.includes('qr_code') ? new BarcodeDetector({ formats: ['qr_code'] }) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+async function decodeImage(source, width, height) {
+  if (detector) {
+    try {
+      const codes = await detector.detect(source);
+      if (codes[0]?.rawValue) return codes[0].rawValue;
+    } catch {
+      // Fall back to jsQR when the browser decoder cannot read this frame.
+    }
+  }
+  const scale = Math.min(1, 1600 / Math.max(width, height));
+  decodeCanvas.width = Math.max(1, Math.round(width * scale));
+  decodeCanvas.height = Math.max(1, Math.round(height * scale));
+  decodeContext.drawImage(source, 0, 0, decodeCanvas.width, decodeCanvas.height);
+  const imageData = decodeContext.getImageData(0, 0, decodeCanvas.width, decodeCanvas.height);
+  return jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: 'attemptBoth' })?.data;
+}
+
 async function startCamera() {
   if (scanning) {
     stopCamera();
@@ -55,16 +85,7 @@ async function startCamera() {
     return;
   }
   try {
-    if (!('BarcodeDetector' in globalThis)) {
-      status('Browser ini belum mendukung pemindai. Coba Chrome atau pilih gambar QR.', true);
-      return;
-    }
-    const formats = await BarcodeDetector.getSupportedFormats();
-    if (!formats.includes('qr_code')) {
-      status('Pemindaian QR belum didukung browser ini. Coba pilih gambar QR atau gunakan Chrome.', true);
-      return;
-    }
-    detector = new BarcodeDetector({ formats: ['qr_code'] });
+    detector = await createDetector();
     $('#result-panel').hidden = true;
     stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: 'environment' } } });
     video.srcObject = stream;
@@ -90,9 +111,9 @@ async function scanCameraFrame() {
   if (!scanBusy && video.readyState >= HTMLMediaElement.HAVE_ENOUGH_DATA && video.videoWidth) {
     scanBusy = true;
     try {
-      const codes = await detector.detect(video);
-      if (codes[0]?.rawValue) {
-        showResult(codes[0].rawValue);
+      const value = await decodeImage(video, video.videoWidth, video.videoHeight);
+      if (value) {
+        showResult(value);
         return;
       }
     } catch {
@@ -101,7 +122,7 @@ async function scanCameraFrame() {
       scanBusy = false;
     }
   }
-  if (scanning) scanFrame = setTimeout(scanCameraFrame, 100);
+  if (scanning) scanFrame = setTimeout(scanCameraFrame, 120);
 }
 
 async function scanImage(file) {
@@ -109,24 +130,17 @@ async function scanImage(file) {
   stopCamera();
   $('#result-panel').hidden = true;
   status('Membaca gambar QR...');
+  let bitmap;
   try {
-    if (!('BarcodeDetector' in globalThis)) {
-      status('Browser ini belum mendukung pembacaan gambar QR. Coba Chrome.', true);
-      return;
-    }
-    const formats = await BarcodeDetector.getSupportedFormats();
-    if (!formats.includes('qr_code')) {
-      status('Pembacaan QR belum didukung browser ini. Coba Chrome.', true);
-      return;
-    }
-    detector = new BarcodeDetector({ formats: ['qr_code'] });
-    const bitmap = await createImageBitmap(file);
-    const codes = await detector.detect(bitmap);
-    bitmap.close();
-    if (codes[0]?.rawValue) showResult(codes[0].rawValue);
+    detector = await createDetector();
+    bitmap = await createImageBitmap(file);
+    const value = await decodeImage(bitmap, bitmap.width, bitmap.height);
+    if (value) showResult(value);
     else status('QR code tidak ditemukan. Coba gambar yang lebih jelas dan tidak terpotong.', true);
   } catch {
     status('Gambar tidak bisa dibaca. Coba pilih file gambar lain.', true);
+  } finally {
+    bitmap?.close();
   }
 }
 
