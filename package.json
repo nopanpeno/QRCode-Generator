@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "check": "node --check src/main.js && node --check src/scanner.js && node --check vite.config.js",
     "build": "vite build",
     "preview": "vite preview"
   },
