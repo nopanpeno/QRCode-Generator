@@ -39,6 +39,25 @@ function getPayload() {
   return { value };
 }
 
+function channelToLinear(value) {
+  const c = value / 255;
+  return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+}
+
+function hexLuminance(hex) {
+  const value = hex.replace('#', '');
+  const r = parseInt(value.slice(0, 2), 16);
+  const g = parseInt(value.slice(2, 4), 16);
+  const b = parseInt(value.slice(4, 6), 16);
+  return 0.2126 * channelToLinear(r) + 0.7152 * channelToLinear(g) + 0.0722 * channelToLinear(b);
+}
+
+function contrastRatio(foreground, background) {
+  const a = hexLuminance(foreground);
+  const b = hexLuminance(background);
+  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+}
+
 function setStatus(message, error = false) {
   $('#status').textContent = message;
   $('#status').classList.toggle('error', error);
@@ -64,7 +83,7 @@ async function refresh() {
     await QRCode.toCanvas(canvas, result.value, {
       width: 360,
       margin: 4,
-      errorCorrectionLevel: 'L',
+      errorCorrectionLevel: 'M',
       color: { dark: $('#foreground-input').value, light: $('#background-input').value }
     });
     if (thisRender !== renderId) return;
@@ -72,7 +91,12 @@ async function refresh() {
     canvas.hidden = false;
     $('#qr-placeholder').hidden = true;
     setDownloadState(true);
-    setStatus('QR code siap dipindai.');
+    const ratio = contrastRatio($('#foreground-input').value, $('#background-input').value);
+    if (ratio < 4) {
+      setStatus('Kontras warna rendah. QR mungkin sulit dipindai. Pilih warna yang lebih kontras.', true);
+    } else {
+      setStatus('QR code siap dipindai.');
+    }
   } catch {
     if (thisRender !== renderId) return;
     currentPayload = '';
@@ -131,7 +155,7 @@ $('#download-png').addEventListener('click', async () => {
   const data = await QRCode.toDataURL(currentPayload, {
     width: exportSize,
     margin: 4,
-    errorCorrectionLevel: 'L',
+    errorCorrectionLevel: 'M',
     color: { dark: $('#foreground-input').value, light: $('#background-input').value }
   });
   download(data, 'qr-studio.png');
@@ -143,7 +167,7 @@ $('#download-svg').addEventListener('click', async () => {
     type: 'svg',
     width: exportSize,
     margin: 4,
-    errorCorrectionLevel: 'L',
+    errorCorrectionLevel: 'M',
     color: { dark: $('#foreground-input').value, light: $('#background-input').value }
   });
   download(`data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`, 'qr-studio.svg');
